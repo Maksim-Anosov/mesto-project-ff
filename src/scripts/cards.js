@@ -1,5 +1,9 @@
 const initialCards = [
     {
+      name: "Спасибо!",
+      link: "https://t3.ftcdn.net/jpg/04/15/67/06/360_F_415670627_Os1pwzaAVHpUiwmUs5Y19ocwIUrGQUmf.jpg",
+    },
+    {
       name: "Архыз",
       link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/arkhyz.jpg",
     },
@@ -22,39 +26,37 @@ const initialCards = [
     {
       name: "Байкал",
       link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg",
-    }
+    },
 ];
 
-export { initialCards };
+const cardTemplate = document.querySelector('#card-template');
+const imagePopup = document.querySelector('.popup_type_image');
 
-export function addCard(name, link, deleteCard) {
-  const listItem = document.querySelector('#card-template');
-  const listItemCopy = listItem.content.cloneNode(true);
+function createCard(name, link, deleteCard, handleImageClick, like) {
+  const listItemCopy = cardTemplate.content.cloneNode(true);
   const deleteButton = listItemCopy.querySelector('.card__delete-button');
-  listItemCopy.querySelector('.card__title').textContent = name;
-  listItemCopy.querySelector('.card__image').src = link;
+  const cardImage = listItemCopy.querySelector('.card__image');
+  const likeButton = listItemCopy.querySelector('.card__like-button');
+  const cardTitle = listItemCopy.querySelector('.card__title');
+
+  cardTitle.textContent = name;
+  cardImage.src = link;
+  cardImage.alt = name;
+
   deleteButton.addEventListener('click', deleteCard);
+  cardImage.addEventListener('click', (evt) => handleImageClick(evt, imagePopup));
+  likeButton.addEventListener('click', (evt) => like(evt));
+  
   return listItemCopy
 }
 
-export function deleteCard () {
-  const card = event.target.closest('.card');
+function deleteCard (evt) {
+  const card = evt.target.closest('.card');
   card.remove();
 }
 
-export function like () {
-  if (event.target.classList.contains('card__like-button')) {
-  event.target.classList.toggle('card__like-button_is-active');
-  }
+function like (evt) {
+  evt.target.classList.toggle('card__like-button_is-active');
 }
 
-export function addNewCard (popup, closePopup) {
-  event.preventDefault();
-  const list = document.querySelector('.places__list');
-  const formNewPlace = document.forms['new-place'];
-  const inputPlace = formNewPlace.elements['place-name'].value
-  const inputLink = formNewPlace.elements.link.value;
-  list.prepend(addCard(inputPlace, inputLink, deleteCard));
-  closePopup(popup);
-  event.target.reset();
-}
+export {initialCards, createCard, deleteCard, like}

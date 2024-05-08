@@ -1,83 +1,100 @@
 import '../pages/index.css';
 import { initialCards } from '../scripts/cards.js';
-import { addCard } from '../scripts/cards.js';
+import { createCard } from '../scripts/cards.js';
 import { deleteCard } from '../scripts/cards.js';
 import { openPopup } from '../scripts/modal.js';
 import { closePopup } from '../scripts/modal.js';
-import { saveChanges } from '../scripts/modal.js';
-import { addNewCard } from '../scripts/cards.js';
+import { handleProfileFormSubmit } from '../scripts/modal.js';
 import { like } from '../scripts/cards.js';
-import { popupImage } from '../scripts/modal.js';
+import { handleImageClick } from '../scripts/modal.js';
+
+const formEditProfile = document.forms['edit-profile'];
+const formNewPlace = document.forms['new-place'];
+const popups = document.querySelectorAll('.popup');
+const cardList = document.querySelector('.places__list');
+const editButton = document.querySelector('.profile__edit-button');
+const popupTypeEdit = document.querySelector('.popup_type_edit');
+const profileAddButton = document.querySelector('.profile__add-button');
+const popupTypeNewCard = document.querySelector('.popup_type_new-card');
+const editProfileName = document.forms['edit-profile'].elements.name;
+const editProfileDescription = document.forms['edit-profile'].elements.description;
 
 // Добавить карточки
 
-const list = document.querySelector('.places__list');
-
 initialCards.forEach(function (item) {
-  list.append(addCard(item.name, item.link, deleteCard));
+  cardList.append(createCard(item.name, item.link, deleteCard, handleImageClick, like));
 });
 
 // Открыть Форму "редактировать профиль"
 
-const editButton = document.querySelector('.profile__edit-button');
-const popupTypeEdit = document.querySelector('.popup_type_edit');
+editButton.addEventListener('click', () => {
+  openPopup(popupTypeEdit);
+  
+  // Значение формы по умолчанию
+  
+  let profileTitle = document.querySelector('.profile__title').textContent;
+  let profileDescription = document.querySelector('.profile__description').textContent;
 
-editButton.addEventListener('click', () => openPopup(popupTypeEdit));
+  editProfileName.value = profileTitle;
+  editProfileDescription.value = profileDescription;
+});
 
-// Закрыть форму "редактировать профиль"
+// Закрыть попапы
 
-const closeButtonPopupTypeEdit = document.querySelector('.popup_type_edit .popup__close');
+popups.forEach((item) => {
+  item.addEventListener('mousedown', (evt) => {
+    if (evt.target.classList.contains('popup_is-opened')) {
+      closePopup(item);
+    }
 
-closeButtonPopupTypeEdit.addEventListener('click', () => closePopup(popupTypeEdit));
-
-// Значения формы "редактировать профиль" по умолчанию
-
-const editProfileName = document.forms['edit-profile'].elements.name;
-const editProfileDescription = document.forms['edit-profile'].elements.description;
-const profileTitle = document.querySelector('.profile__title').textContent;
-const profileDescription = document.querySelector('.profile__description').textContent;
-
-editProfileName.value = profileTitle;
-editProfileDescription.value = profileDescription;
+    else if (evt.target.classList.contains('popup__close')) {
+      closePopup(item);
+    }
+  })
+})
 
 // Сохранить изменения формы "редактировать профиль"
 
-const formEditProfile = document.forms['edit-profile'];
-
-formEditProfile.addEventListener('submit', () => saveChanges(popupTypeEdit, closePopup));
+formEditProfile.addEventListener('submit', (evt) => handleProfileFormSubmit(evt, popupTypeEdit, closePopup));
 
 // Открыть Форму "добавить карточку"
 
-const profileAddButton = document.querySelector('.profile__add-button');
-const popupTypeNewCard = document.querySelector('.popup_type_new-card');
-
 profileAddButton.addEventListener('click', () => openPopup(popupTypeNewCard));
-
-// Закрыть форму "добавить карточку"
-
-const closeButtonPopupTypeNewCard = document.querySelector('.popup_type_new-card .popup__close');
-
-closeButtonPopupTypeNewCard.addEventListener('click', () => closePopup(popupTypeNewCard));
 
 // Добавить карточку
 
-const formNewPlace = document.forms['new-place'];
+formNewPlace.addEventListener('submit', (evt) => addNewCard(evt, popupTypeNewCard, closePopup));
 
-formNewPlace.addEventListener('submit', () => addNewCard(popupTypeNewCard, closePopup));
+// Новая карточка
 
-// Поставить лайк
+// function addNewCard (evt, popup, closePopup) {
+//   evt.preventDefault();
+//   const formNewPlace = document.forms['new-place'];
+//   const inputPlace = formNewPlace.elements['place-name'].value
+//   const inputLink = formNewPlace.elements.link.value;
+//   cardList.prepend(createCard(inputPlace, inputLink, deleteCard, handleImageClick, like));
+//   closePopup(popup);
+//   evt.target.reset();
+// }
 
-list.addEventListener('click', like);
+// функция принимает в вызов карточку и метод вставки
+// метод по умолчанию `prepend`, но можно указать `append` 
 
-// Открыть попап с картинкой
+function renderCard(item, method = "prepend") {
+  const inputPlace = formNewPlace.elements['place-name'].value
+  const inputLink = formNewPlace.elements.link.value;
+  // создаем карточку, передавая обработчики в виде объекта `callbacks`
+  const cardElement = createCard(inputPlace, inputLink, deleteCard, handleImageClick, like);
 
-const imagePopup = document.querySelector('.popup_type_image');
+  // вставляем карточку, используя метод (вставится `prepend` или `append`)
+  item[ method ](cardElement);
+}
 
-list.addEventListener('click', () => popupImage(imagePopup));
+function addNewCard (evt, popup, closePopup) {
+  evt.preventDefault();
+  renderCard(cardList);
+  closePopup(popup);
+  evt.target.reset();
+}
 
-// Закрыть попап с картинкой 
-
-const closeButtonePopupImage = document.querySelector('.popup_type_image .popup__close')
-
-closeButtonePopupImage.addEventListener('click', () => closePopup(imagePopup));
 

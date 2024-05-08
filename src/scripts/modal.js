@@ -1,56 +1,44 @@
-export function openPopup (popup) {
+const image = document.querySelector('.popup__image');
+const caption = document.querySelector('.popup__caption');
+const nameInput = document.querySelector('.popup__input_type_name');
+const jobInput = document.querySelector('.popup__input_type_description');
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+
+function openPopup (popup) {
   popup.classList.add('popup_is-opened');
-  document.addEventListener('keydown', () => closePopupEsc(popup));
-  popup.addEventListener('click', () => closePopupOverlay(popup));
+  document.addEventListener('keydown', handleEscape); 
 }
 
-export function closePopup (popup) {
+function closePopup (popup) {
   popup.classList.remove('popup_is-opened');
-  
-  // Значения форм по умолчанию при закрытии попапа
-  const editProfileName = document.forms['edit-profile'].elements.name;
-  const profileTitle = document.querySelector('.profile__title').textContent;
-  const profileDescription = document.querySelector('.profile__description').textContent;
-  const editProfileDescription = document.forms['edit-profile'].elements.description;
-
-  editProfileName.value = profileTitle;
-  editProfileDescription.value = profileDescription;
+  document.removeEventListener('keydown', handleEscape);
 }
 
-export function closePopupEsc (popup) {
-  if (event.key === 'Escape') {
-    closePopup(popup);
+function handleEscape(evt) {
+  if (evt.key === 'Escape') {
+    const openedPopup = document.querySelector('.popup_is-opened');
+    closePopup(openedPopup);
   }
 }
 
-export function closePopupOverlay(popup) {
-  if (event.target === event.currentTarget) {
-    closePopup(popup);
-  }
-}
-
-export function popupImage (popup) {
-  const image = document.querySelector('.popup__image');
-  
-    if (event.target.classList.contains('card__image')) {
+function handleImageClick (evt, popup) {
+    if (evt.target.classList.contains('card__image')) {
       openPopup(popup);
-      console.log(event.target)
-      image.src = event.target.src;
+      image.src = evt.target.src;
+      caption.textContent = evt.target.alt;
     }
   }
 
-  export function saveChanges (popup, closePopup) {
-    event.preventDefault();
+function handleProfileFormSubmit (evt, popup, closePopup) {
+  evt.preventDefault();
+
+  const nameInputValue = nameInput.value;
+  const jobInputValue = jobInput.value;
+  profileTitle.textContent = nameInputValue;
+  profileDescription.textContent = jobInputValue;
   
-    const nameInput = document.querySelector('.popup__input_type_name');
-    const jobInput = document.querySelector('.popup__input_type_description');
-    const nameInputValue = nameInput.value;
-    const jobInputValue = jobInput.value;
-    const profileTitle = document.querySelector('.profile__title');
-    const profileDescription = document.querySelector('.profile__description');
-  
-    profileTitle.textContent = nameInputValue;
-    profileDescription.textContent = jobInputValue;
-    
-    closePopup(popup);
+  closePopup(popup);
   }
+
+  export {openPopup, closePopup, handleEscape, handleImageClick, handleProfileFormSubmit}
