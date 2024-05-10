@@ -1,7 +1,7 @@
 // Спасибо огромное за Ваши подробные комментарии! Стало намного понятнее!
 
 import '../pages/index.css';
-import { createCard, deleteCard } from '../scripts/cards.js';
+import { createCard, deleteCard, like } from '../scripts/cards.js';
 import { openPopup, closePopup } from '../scripts/modal.js';
 import { initialCards } from '../scripts/initialCards.js';
 
@@ -28,12 +28,9 @@ function handleImageClick (evt) {
   if (evt.target.classList.contains('card__image')) {
     openPopup(imagePopup);
     image.src = evt.target.src;
+    image.alt = evt.target.alt;
     caption.textContent = evt.target.alt;
   }
-}
-
-function like (evt) {
-  evt.target.classList.toggle('card__like-button_is-active');
 }
 
 function renderCard(item, method = "prepend") {

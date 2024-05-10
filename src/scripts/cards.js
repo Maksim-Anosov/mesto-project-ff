@@ -23,4 +23,8 @@ function deleteCard (evt) {
   card.remove();
 }
 
-export {createCard, deleteCard}
+function like (evt) {
+  evt.target.classList.toggle('card__like-button_is-active');
+}
+
+export {createCard, deleteCard, like}
