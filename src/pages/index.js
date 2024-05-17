@@ -1,5 +1,3 @@
-// Спасибо огромное за Ваши подробные комментарии! Стало намного понятнее!
-
 import '../pages/index.css';
 import { createCard, deleteCard, like } from '../scripts/cards.js';
 import { openPopup, closePopup } from '../scripts/modal.js';
@@ -21,6 +19,9 @@ const imagePopup = document.querySelector('.popup_type_image');
 const image = document.querySelector('.popup__image');
 const caption = document.querySelector('.popup__caption');
 
+const forms = document.querySelectorAll('.popup__form');
+const formEditProfileInputs = Array.from(formEditProfile.querySelectorAll('.popup__input'));
+const formEditProfileButton = formEditProfile.querySelector('.popup__button');
 
 // Добавить карточки
 
@@ -53,6 +54,12 @@ editButton.addEventListener('click', () => {
   
   editProfileName.value = profileTitle.textContent;
   editProfileDescription.value = profileDescription.textContent;
+
+  formEditProfileInputs.forEach((input) => {
+    hideInputError(formEditProfile, input);
+  })
+  
+  toggleButtonState(formEditProfileInputs, formEditProfileButton);
 });
 
 // Закрыть попапы
@@ -67,6 +74,64 @@ popups.forEach((item) => {
       closePopup(item);
     }
   })
+})
+
+// Валидация формы
+
+function showInputError (formElement, inputElement, errorMessage) {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+  inputElement.classList.add('popup__input_type_error');
+  errorElement.classList.add('input-error_active');
+  errorElement.textContent = errorMessage;
+}
+
+function hideInputError (formElement, inputElement) {
+  const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
+  inputElement.classList.remove('popup__input_type_error');
+  errorElement.classList.remove('input-error_active');
+  errorElement.textContent = '';
+}
+
+function isValid (formElement, inputElement) {
+  if(!inputElement.validity.valid) {
+    showInputError(formElement, inputElement, inputElement.validationMessage);
+  }
+  else {
+    hideInputError(formElement, inputElement);
+  }
+}
+
+function setEventListeners (formElement) {
+  const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
+  const buttonElement = formElement.querySelector('.popup__button');
+
+  inputList.forEach((item) => {
+    item.addEventListener('input', () => {
+      isValid(formElement, item);
+      toggleButtonState(inputList, buttonElement);
+    })
+  })
+}
+
+function hasInvalidInput (inputList) {
+  return inputList.some((inputElement) => {
+    return !inputElement.validity.valid;
+  })
+}
+
+function toggleButtonState (inputList, buttonElement) {
+  if (hasInvalidInput(inputList)) {
+    buttonElement.disabled = true;
+    buttonElement.classList.add('submit_inactive');
+  }
+  else {
+    buttonElement.disabled = false;
+    buttonElement.classList.remove('submit_inactive');
+  }
+}
+
+forms.forEach((item) => {
+  setEventListeners(item);
 })
 
 // Сохранить изменения формы "редактировать профиль"

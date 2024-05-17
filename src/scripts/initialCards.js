@@ -1,9 +1,5 @@
 const initialCards = [
   {
-    name: "Спасибо!",
-    link: "https://t3.ftcdn.net/jpg/04/15/67/06/360_F_415670627_Os1pwzaAVHpUiwmUs5Y19ocwIUrGQUmf.jpg",
-  },
-  {
     name: "Архыз",
     link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/arkhyz.jpg",
   },
